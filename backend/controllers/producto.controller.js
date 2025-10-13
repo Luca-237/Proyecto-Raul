@@ -5,6 +5,7 @@ import {
   getProductosPorCategoria,
   calcularPrecioBatch
 } from '../models/producto.model.js';
+import cloudinary from '../utils/cloudinary.js'; // <--- IMPORTA LA CONFIG DE CLOUDINARY
 
 /**
  * GET /api/productos
@@ -177,5 +178,56 @@ export const calcularPrecioPersonalizado = async (req, res) => {
       error: 'Error al calcular el precio personalizado',
       detalle: err.message
     });
+  }
+};
+export const createProducto = async (req, res) => {
+  try {
+    const { nombre, descripcion, precio, categoria_id } = req.body;
+    let imagen_url = null;
+
+    // 1. Revisa si se subió un archivo
+    if (req.file) {
+      // 2. Sube el archivo a Cloudinary
+      // Usamos `streamifier` para convertir el buffer del archivo en un stream legible
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "productos" }, // Opcional: para organizar en carpetas
+          (error, result) => {
+            if (error) reject(error);
+            resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+      imagen_url = result.secure_url; // La URL segura de la imagen en Cloudinary
+    }
+
+    // 3. Crea el producto en la base de datos
+    const nuevoProducto = await Producto.create({
+      nombre,
+      descripcion,
+      precio,
+      categoria_id,
+      imagen_url // Guardamos la URL de Cloudinary
+    });
+
+    res.status(201).json(nuevoProducto);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al crear el producto' });
+  }
+};
+
+// Asegúrate de que getProductos también devuelva la imagen_url
+export const getProductos = async (req, res) => {
+  try {
+    const productos = await Producto.findAll({
+      // Opcional: para ordenar o incluir otras cosas
+    });
+    res.json(productos);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los productos' });
   }
 };

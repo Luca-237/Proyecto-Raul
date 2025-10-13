@@ -5,10 +5,14 @@ import {
   obtenerProductosPorCategoria,
   calcularPrecioPersonalizado
 } from '../controllers/producto.controller.js';
-
+import upload from '../utils/multer.js'; // <--- IMPORTA MULTER
 const router = express.Router();
 
 // ===== RUTAS DE PRODUCTOS =====
+router.get('/', getProductos);
+// Usamos el middleware 'upload.single('imagen')'
+// 'imagen' es el nombre del campo en el formulario del frontend
+router.post('/', upload.single('imagen'), createProducto); // <--- MODIFICA ESTA LÍNEA
 
 // 1. GET /api/productos - Obtener todos los productos
 router.get('/', obtenerTodosLosProductos);
