@@ -3,27 +3,29 @@ import {
   obtenerTodosLosProductos,
   obtenerProductoPorId,
   obtenerProductosPorCategoria,
-  calcularPrecioPersonalizado
+  calcularPrecioPersonalizado,
+  crearProducto // Importamos la nueva función del controlador
 } from '../controllers/producto.controller.js';
-import upload from '../utils/multer.js'; // <--- IMPORTA MULTER
+import upload from '../utils/multer.js'; // Importamos multer
+
 const router = express.Router();
 
 // ===== RUTAS DE PRODUCTOS =====
-router.get('/', getProductos);
-// Usamos el middleware 'upload.single('imagen')'
-// 'imagen' es el nombre del campo en el formulario del frontend
-router.post('/', upload.single('imagen'), createProducto); // <--- MODIFICA ESTA LÍNEA
 
 // 1. GET /api/productos - Obtener todos los productos
 router.get('/', obtenerTodosLosProductos);
 
-// 3. GET /api/productos/categoria/:categoria - Productos por categoría (debe ir antes que /:id)
+// 2. POST /api/productos - Crear un nuevo producto (NUEVA RUTA)
+// Usamos el middleware para indicar que subiremos un solo archivo llamado 'imagen'
+router.post('/', upload.single('imagen'), crearProducto);
+
+// 3. GET /api/productos/categoria/:categoria - Productos por categoría
 router.get('/categoria/:categoria', obtenerProductosPorCategoria);
 
-// 2. GET /api/productos/:id - Producto específico con ingredientes base
+// 4. GET /api/productos/:id - Producto específico
 router.get('/:id', obtenerProductoPorId);
 
-// 4. POST /api/productos/:id/calcular-precio - Calcular precio personalizado (NUEVO)
+// 5. POST /api/productos/:id/calcular-precio - Calcular precio personalizado
 router.post('/:id/calcular-precio', calcularPrecioPersonalizado);
 
 export default router;

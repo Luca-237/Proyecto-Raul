@@ -1,7 +1,6 @@
-// backend/utils/multer.js
 import multer from 'multer';
 
-// Esto le dice a multer que guarde los archivos en memoria temporalmente
+// Le decimos a multer que guarde los archivos en la memoria temporalmente
 const storage = multer.memoryStorage();
 
 const upload = multer({
