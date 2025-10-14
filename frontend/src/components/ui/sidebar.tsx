@@ -29,7 +29,7 @@ const categories: Category[] = [
 import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
 import Logo from '../../assets/logo_mcraulo.svg';
 
-const Sidebar = () => {
+const SideBar = () => {
   return (
     <div className="w-64 bg-gray-800 text-white flex flex-col p-4">
       <div className="flex items-center justify-center mb-10">
@@ -58,4 +58,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SideBar;
