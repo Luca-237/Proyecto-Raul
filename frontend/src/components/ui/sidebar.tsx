@@ -26,37 +26,36 @@ const categories: Category[] = [
   { id: "bebidas", name: "Bebidas", icon: <ShoppingBag className="h-4 w-4" /> },
 ]
 
-export function SideBar({ activeCategory, onCategoryChange }: SideBarProps) {
+import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
+import Logo from '../../assets/logo_mcraulo.svg';
+
+const Sidebar = () => {
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-xl font-bold text-gray-800">🍔 Menú</h2>
+    <div className="w-64 bg-gray-800 text-white flex flex-col p-4">
+      <div className="flex items-center justify-center mb-10">
+        <img src={Logo} alt="McRaulo Logo" className="w-32" />
       </div>
-
-      <nav className="flex-1 p-4 space-y-2">
-        <div className="mb-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Categorías</p>
-          {categories.map((category) => (
-            <Button
-              key={category.id}
-              variant={activeCategory === category.id ? "default" : "ghost"}
-              className={`w-full justify-start mb-1 ${
-                activeCategory === category.id ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => onCategoryChange(category.id)}
-            >
-              {category.icon}
-              <span className="ml-2">{category.name}</span>
-            </Button>
-          ))}
-        </div>
+      <nav className="flex flex-col space-y-4">
+        {/* Usamos Link en lugar de <a> para la navegación interna */}
+        <Link to="/">
+          <Button variant="ghost" className="w-full justify-start">
+            Inicio
+          </Button>
+        </Link>
+        <Link to="/login">
+          <Button variant="ghost" className="w-full justify-start">
+            Login
+          </Button>
+        </Link>
+        {/* --- ENLACE A LA PÁGINA DE ADMINISTRACIÓN --- */}
+        <Link to="/admin">
+          <Button variant="ghost" className="w-full justify-start text-yellow-400">
+            Administración
+          </Button>
+        </Link>
       </nav>
+    </div>
+  );
+};
 
-      <div className="p-4 border-t border-gray-200">
-        <p className="text-xs text-gray-500 text-center">© 2024 Mi Restaurante</p>
-      </div>
-    </aside>
-  )
-}
-
-export default SideBar
+export default Sidebar;
