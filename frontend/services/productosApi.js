@@ -72,6 +72,25 @@ export const obtenerCategorias = async () => {
 
 // --- Futuras funciones que podrías necesitar ---
 
+/**
+ * Obtiene productos por una categoría específica.
+ * @param {string} categoria - El nombre de la categoría a buscar.
+ * @returns {Promise<Array<object>>} Una promesa que resuelve a un array de productos de esa categoría.
+ */
+export const obtenerProductosPorCategoria = async (categoria) => {
+  try {
+    const response = await fetch(`${API_URL}/productos/categoria/${categoria}`);
+    if (!response.ok) {
+      throw new Error(`Error HTTP ${response.status}: No se pudieron obtener los productos de la categoría.`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error en obtenerProductosPorCategoria (categoría: ${categoria}):`, error);
+    throw error;
+  }
+};
+
 
 
 export const obtenerProductoPorId = async (id) => {
