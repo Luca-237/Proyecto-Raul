@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart, User, Settings } from "lucide-react"
 // ✅ IMPORTANTE: Usar SideBar con S mayúscula (debe coincidir con el nombre del archivo)
-import { SideBar } from "@/components/ui/sidebar"
+import SideBar from "@/components/ui/sidebar"
 import ProductList, { type Product } from "@/components/ui/productList"
 
 // ===== INTERFACES =====
@@ -53,10 +53,7 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <SideBar 
-        activeCategory={selectedCategory} 
-        onCategoryChange={setSelectedCategory}
-      />
+      <SideBar />
 
       {/* Contenido Principal */}
       <div className="flex-1 flex flex-col overflow-hidden">

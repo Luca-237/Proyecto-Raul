@@ -7,25 +7,6 @@
 
 import { Home, ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-interface Category {
-  id: string
-  name: string
-  icon: React.ReactNode
-}
-
-interface SideBarProps {
-  activeCategory: string
-  onCategoryChange: (category: string) => void
-}
-
-const categories: Category[] = [
-  { id: "todas", name: "Todas", icon: <Home className="h-4 w-4" /> },
-  { id: "hamburguesas", name: "Hamburguesas", icon: <ShoppingBag className="h-4 w-4" /> },
-  { id: "papas", name: "Papas", icon: <ShoppingBag className="h-4 w-4" /> },
-  { id: "bebidas", name: "Bebidas", icon: <ShoppingBag className="h-4 w-4" /> },
-]
-
 import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
 import Logo from '../../assets/logo_mcraulo.svg';
 

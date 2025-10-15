@@ -1,7 +1,5 @@
 // app.js
 import cors from 'cors';
-
-
 import express from 'express';
 import dotenv from 'dotenv';
 import { testConnection } from './db/db.js';
@@ -21,6 +19,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware para entender JSON
 app.use(express.json());
 app.use(cors());
+
 // Probar conexión a la DB
 testConnection().then(isConnected => {
   if (isConnected) {
@@ -29,6 +28,11 @@ testConnection().then(isConnected => {
     app.use('/api/ingredientes', ingredienteRoutes);
     app.use('/api/productos', productoRoutes);
     app.use('/api/pedidos', pedidoRoutes);
+
+    // Middleware para manejo de rutas no encontradas (404)
+    app.use((req, res, next) => {
+      res.status(404).json({ error: 'Ruta no encontrada' });
+    });
 
     // Iniciar el servidor
     app.listen(PORT, () => {

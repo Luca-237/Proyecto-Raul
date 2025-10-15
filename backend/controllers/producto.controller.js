@@ -6,6 +6,7 @@ import {
   calcularPrecioBatch,
   createProducto as createProductoModel // Renombramos para evitar conflictos
 } from '../models/producto.model.js';
+import { getIngredientesPorProducto } from '../models/ingrediente.model.js';
 import cloudinary from '../utils/cloudinary.js'; // Importamos la config de Cloudinary
 
 /**
@@ -68,7 +69,6 @@ export const crearProducto = async (req, res) => {
  * Obtener todos los productos
  */
 export const obtenerTodosLosProductos = async (req, res) => {
-  // ... tu código existente
   const { incluirIngredientes } = req.query; // ?incluirIngredientes=true
   
   try {
@@ -76,7 +76,6 @@ export const obtenerTodosLosProductos = async (req, res) => {
 
     // Incluir ingredientes base si se pide
     if (incluirIngredientes === 'true') {
-      const { getIngredientesPorProducto } = await import('../models/ingrediente.model.js');
       const productosConIngredientes = await Promise.all(
         productos.map(async (producto) => {
           const ingredientesBase = await getIngredientesPorProducto(producto.idproducto);
@@ -103,7 +102,6 @@ export const obtenerTodosLosProductos = async (req, res) => {
  * Obtener producto específico con sus ingredientes base
  */
 export const obtenerProductoPorId = async (req, res) => {
-  // ... tu código existente
   const { id } = req.params;
   
   if (isNaN(id)) {
@@ -129,7 +127,6 @@ export const obtenerProductoPorId = async (req, res) => {
  * Obtener todos los productos de una categoría
  */
 export const obtenerProductosPorCategoria = async (req, res) => {
-  // ... tu código existente
   const { categoria } = req.params;
   const { incluirIngredientes } = req.query; // ?incluirIngredientes=true
   
@@ -143,7 +140,6 @@ export const obtenerProductosPorCategoria = async (req, res) => {
 
     // Incluir ingredientes base si se pide
     if (incluirIngredientes === 'true') {
-      const { getIngredientesPorProducto } = await import('../models/ingrediente.model.js');
       const productosConIngredientes = await Promise.all(
         productos.map(async (producto) => {
           const ingredientesBase = await getIngredientesPorProducto(producto.idproducto);
@@ -170,7 +166,6 @@ export const obtenerProductosPorCategoria = async (req, res) => {
  * Calcular el precio personalizado de un producto
  */
 export const calcularPrecioPersonalizado = async (req, res) => {
-  // ... tu código existente
   const { id } = req.params;
   const { ingredientesExtra = [], ingredientesEliminar = [], cantidad = 1 } = req.body;
 
