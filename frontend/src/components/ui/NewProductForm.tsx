@@ -1,4 +1,5 @@
-import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent, ChangeEvent } from 'react';
 import { Button } from './button';
 import { crearNuevoProducto } from '../../../services/productosApi'; // Ajusta la ruta si es necesario
 
@@ -28,9 +29,12 @@ const NewProductForm = () => {
           throw new Error('No se pudieron cargar las categorías');
         }
         const data = await response.json();
-        setCategorias(data);
-        if (data.length > 0) {
-          setIdTipoProducto(data[0].idtipoproducto.toString());
+        // El backend devuelve { total, categorias } o en algunos casos un array directo.
+        // Normalizamos a un array para evitar errores como "categorias.map is not a function".
+        const cats = Array.isArray(data) ? data : (data && Array.isArray(data.categorias) ? data.categorias : []);
+        setCategorias(cats);
+        if (cats.length > 0) {
+          setIdTipoProducto(cats[0].idtipoproducto.toString());
         }
       } catch (err) {
         if (err instanceof Error) {
@@ -144,7 +148,7 @@ const NewProductForm = () => {
           required
         >
           {categorias.map((cat) => (
-            <option key={cat.idtipoproducto} value={cat.idtipoproducto}>
+            <option key={cat.idtipoproducto} value={cat.idtipoproducto.toString()}>
               {cat.categoria}
             </option>
           ))}
