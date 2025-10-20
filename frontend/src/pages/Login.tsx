@@ -1,90 +1,45 @@
-"use client"
+// =============================================================================
+// src/pages/Login.tsx - CORREGIDO
+// =============================================================================
 
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import logo from "@/assets/logo_mcraulo.svg"
-import qr from "@/assets/qr-code-example.jpg"
-import { QrCode } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom" // 1. Importar useNavigate
 
-export default function HomePage() {
-    return (
-        <main className="min-h-screen bg-background p-4 md:p-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center min-h-screen">
-                    {/* Logo y botones principales - columna central */}
-                    <div className="lg:col-span-2 flex flex-col items-center justify-center space-y-8">
-                        {/* Logo principal */}
-                        <div className="p-4 rounded-lg shadow-inner bg-emerald-700/20">
-                            <div className="mb-8">
-                                <img
-                                    src={logo}
-                                    alt="Logo Hamburguesería"
-                                    width={400}
-                                    height={300}
-                                    className="w-100 h-100 max-w-full drop-shadow-lg"
-                                />
-                            </div>
-                        </div>
-                        {/* Botones principales */}
-                        <div className="flex flex-col space-y-6 w-full max-w-md">
-                            <Link to="/home">
-                                <Button
-                                    size="lg"
+export default function Login() {
+  const navigate = useNavigate(); // 2. Inicializar el hook de navegación
 
-                                    className="cursor-pointer hover:scale-103 transition-all duration-200 w-full text-xl py-8 border-2 bg-neutral-100 border-stone-800 text-stone-900 hover:bg-primary/90 hover:text-primary-foreground font-semibold shadow-lg transition-all duration-200 hover:shadow-xl "
-                                    onClick={() => {
-                                        console.log("Pedir sin asociarse clicked")
-                                    }}
-                                >
+  // 3. Función para manejar el "submit" del formulario
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault(); // Prevenir que la página se recargue
+    // Aquí iría tu lógica de autenticación en el futuro
+    console.log("Simulando inicio de sesión...");
+    navigate("/"); // 4. Redirigir al usuario al Home
+  };
 
-                                    🍔 Pedir sin asociarse
-
-                                </Button>
-                            </Link>
-
-                            <Button
-
-                                size="lg"
-                                    className="cursor-pointer hover:scale-103 transition-all duration-200 w-full text-xl py-8 border-2 bg-neutral-100 border-stone-800 text-stone-900 hover:bg-primary/90 hover:text-primary-foreground font-semibold shadow-lg transition-all duration-200 hover:shadow-xl "
-                                onClick={() => {
-                                    console.log("Asociarse clicked")
-                                }}
-                            >
-                                👤 Asociarse
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Sección QR - columna derecha */}
-                    <div className="flex flex-col items-center justify-center lg:justify-start lg:pt-20">
-                        <Card className="p-4 w-75  shadow-xl border-2 border-border bg-neutral-100" >
-                            <div className="flex flex-col items-center space-y-6">
-                                <h3 className="text-2xl font-bold text-foreground text-center">Asociar con QR</h3>
-
-                                <div className="bg-neutral-100 p-4 rounded-lg shadow-inner">
-                                    <img
-                                        src={qr}
-                                        alt="Código QR para asociarse"
-                                        width={200}
-                                        height={200}
-                                        className="w-48 h-48"
-                                    />
-                                </div>
-
-                                <p className="text-muted-foreground text-center text-lg">
-                                    Escanea con tu celular para asociarte rápidamente
-                                </p>
-
-                                <div className="flex items-center space-x-2 text-accent">
-                                    <QrCode size={24} color="#800040" />
-                                    <span className="font-medium text-muted-foreground">Fácil y rápido</span>
-                                </div>
-                            </div>
-                        </Card>
-                    </div>
-                </div>
-            </div>
-        </main>
-    )
+  return (
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md text-center">
+        <h1 className="text-3xl font-bold text-gray-800">Iniciar Sesión</h1>
+        <p className="mt-2 text-gray-500">Bienvenido de vuelta</p>
+        
+        {/* 5. Usar un formulario real con el evento onSubmit */}
+        <form className="space-y-6" onSubmit={handleLogin}>
+          {/* Aquí puedes agregar los inputs de email y contraseña */}
+          <div>
+            <label className="sr-only">Usuario</label>
+            <input className="w-full px-4 py-2 border rounded-md" placeholder="Usuario (demo)" />
+          </div>
+          <div>
+            <label className="sr-only">Contraseña</label>
+            <input type="password" className="w-full px-4 py-2 border rounded-md" placeholder="Contraseña (demo)" />
+          </div>
+          
+          {/* 6. El botón ahora es de tipo "submit" */}
+          <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-lg py-6">
+            Ingresar
+          </Button>
+        </form>
+      </div>
+    </div>
+  )
 }

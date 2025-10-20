@@ -1,5 +1,5 @@
 // =============================================================================
-// src/pages/Home.tsx - CORREGIDO (SIN SIDEBAR DUPLICADO Y CON IMÁGENES)
+// src/pages/Home.tsx - CORREGIDO (Error de imagen)
 // =============================================================================
 
 import { useState } from "react"
@@ -24,7 +24,6 @@ export default function Home() {
   const [carritoItems, setCarritoItems] = useState<CartItem[]>([])
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>('products');
 
-  // Agregar producto directamente al carrito al hacer clic
   const handleProductClick = (producto: Product) => {
     setCarritoItems(prev => {
       const itemExistente = prev.find(item => item.id === producto.id);
@@ -40,7 +39,6 @@ export default function Home() {
     });
   };
 
-  // Actualizar la cantidad de un producto
   const handleUpdateCantidad = (productoId: number, nuevaCantidad: number) => {
     setCarritoItems(prev => {
       if (nuevaCantidad <= 0) {
@@ -54,14 +52,12 @@ export default function Home() {
     });
   };
 
-  // Calcular total del carrito
   const totalCarrito = carritoItems.reduce((total, item) => {
     const precio = parseFloat(item.price.replace('$', ''));
     return total + (precio * item.cantidad);
   }, 0);
 
-  // Renderizar contenido principal o pantallas de pago
-  const renderContent = () => {
+  const MainContent = () => {
     switch (checkoutStep) {
       case 'checkout':
         return (
@@ -90,27 +86,25 @@ export default function Home() {
         );
       case 'products':
       default:
-        // ✅ CORRECCIÓN: Se quita el <SideBar /> de aquí para evitar duplicados
         return (
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
             <header className="bg-white shadow-sm border-b">
               <div className="px-6 py-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                      {selectedCategory === "todas" ? "Todos los Productos" : 
+                    <h1 className="text-3xl font-bold text-gray-800">
+                      {selectedCategory === "todas" ? "Elige tu pedido" : 
                        selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
                     </h1>
-                    <p className="text-sm text-gray-500">Selecciona tus productos favoritos</p>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <Button variant="ghost" size="sm"><User className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="sm"><Settings className="h-4 w-4" /></Button>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="ghost" size="icon"><User className="h-6 w-6 text-gray-600" /></Button>
+                    <Button variant="ghost" size="icon"><Settings className="h-6 w-6 text-gray-600" /></Button>
                   </div>
                 </div>
               </div>
             </header>
-            <main className="flex-1 overflow-y-auto p-6 mb-24">
+            <main className="flex-1 overflow-y-auto p-6 mb-32">
               <ProductList
                 onProductClick={handleProductClick}
                 categoria={selectedCategory === "todas" ? undefined : selectedCategory}
@@ -123,28 +117,30 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* El Sidebar ahora solo se renderiza aquí una vez */}
+    <div className="flex h-screen bg-gray-100">
       <SideBar />
-      {renderContent()}
+      <MainContent />
 
-      {/* Footer del Pedido */}
       {checkoutStep === 'products' && carritoItems.length > 0 && (
-        <footer className="fixed bottom-0 left-64 right-0 bg-white border-t-2 border-gray-200 shadow-lg p-4 z-10">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-4 overflow-x-auto">
+        <footer className="fixed bottom-0 left-64 right-0 bg-white border-t-4 border-yellow-400 shadow-2xl p-4 z-20">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4 overflow-x-auto pr-4">
               {carritoItems.map(item => (
-                <div key={item.id} className="flex-shrink-0 flex items-center gap-3 p-2 border rounded-md">
-                  {/* ✅ CORRECCIÓN: Se agrega la URL base para que las imágenes se muestren */}
-                  <img src={`http://localhost:3000/${item.image}`} alt={item.name} className="w-10 h-10 object-cover rounded" />
+                <div key={item.id} className="flex-shrink-0 flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                  {/* ✅ CORRECCIÓN: Comprueba si existe la imagen antes de mostrarla */}
+                  <img 
+                    src={item.image ? `http://localhost:3000/${item.image.replace(/\\/g, '/')}` : 'https://via.placeholder.com/150'} 
+                    alt={item.name} 
+                    className="w-12 h-12 object-cover rounded-md" 
+                  />
                   <div>
-                    <p className="font-semibold text-sm">{item.name}</p>
+                    <p className="font-bold text-gray-800 text-sm">{item.name}</p>
                     <div className="flex items-center gap-2 mt-1">
-                       <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleUpdateCantidad(item.id, item.cantidad - 1)}>
+                       <Button variant="outline" size="icon" className="h-6 w-6 rounded-full" onClick={() => handleUpdateCantidad(item.id, item.cantidad - 1)}>
                          <Minus className="h-3 w-3" />
                        </Button>
-                       <span className="text-sm font-bold">{item.cantidad}</span>
-                       <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleUpdateCantidad(item.id, item.cantidad + 1)}>
+                       <span className="text-sm font-bold w-4 text-center">{item.cantidad}</span>
+                       <Button variant="outline" size="icon" className="h-6 w-6 rounded-full" onClick={() => handleUpdateCantidad(item.id, item.cantidad + 1)}>
                          <Plus className="h-3 w-3" />
                        </Button>
                     </div>
@@ -152,14 +148,14 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-4 ml-4">
+            <div className="flex items-center gap-6 ml-6">
               <div className="text-right">
-                <p className="text-gray-600">Total</p>
-                <p className="font-bold text-xl">${totalCarrito.toFixed(2)}</p>
+                <p className="text-gray-600 font-medium">Total del Pedido</p>
+                <p className="font-extrabold text-3xl text-gray-800">${totalCarrito.toFixed(2)}</p>
               </div>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 h-12 px-6" onClick={() => setCheckoutStep('checkout')}>
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Proceder al Pago
+              <Button className="bg-red-600 hover:bg-red-700 text-white h-16 px-8 rounded-lg text-lg font-bold" onClick={() => setCheckoutStep('checkout')}>
+                <ShoppingCart className="h-6 w-6 mr-3" />
+                Pagar Ahora
               </Button>
             </div>
           </div>
