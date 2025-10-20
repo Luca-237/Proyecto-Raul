@@ -150,3 +150,21 @@ export const eliminarProducto = async (id) => {
     throw error;
   }
 };
+// =============================================================================
+// Agrega esta función en: frontend/services/productosApi.js
+// =============================================================================
+// ... (debajo de tus otras funciones exportadas)
+
+// Función para obtener productos por categoría
+export const getProductosPorCategoria = async (categoria) => {
+  try {
+    const response = await fetch(`${API_URL}/productos?categoria=${categoria}`);
+    if (!response.ok) {
+      throw new Error(`Error al obtener los productos de la categoría: ${categoria}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching products by category:", error);
+    return [];
+  }
+};

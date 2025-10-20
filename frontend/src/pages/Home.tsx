@@ -1,144 +1,169 @@
 // =============================================================================
-// src/pages/Home.tsx - CORREGIDO
+// src/pages/Home.tsx - CORREGIDO (SIN SIDEBAR DUPLICADO Y CON IMÁGENES)
 // =============================================================================
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ShoppingCart, User, Settings } from "lucide-react"
-// ✅ IMPORTANTE: Usar SideBar con S mayúscula (debe coincidir con el nombre del archivo)
+import { ShoppingCart, User, Settings, Minus, Plus } from "lucide-react"
 import SideBar from "@/components/ui/sidebar"
 import ProductList, { type Product } from "@/components/ui/productList"
+import Checkout from "./Checkout"
+import CashPayment from "./CashPayment"
+import CardPayment from "./CardPayment"
 
 // ===== INTERFACES =====
 interface CartItem extends Product {
-  cantidad: number
+  cantidad: number;
 }
+
+type CheckoutStep = 'products' | 'checkout' | 'cash' | 'card';
 
 // ===== COMPONENTE PRINCIPAL =====
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>("todas")
   const [carritoItems, setCarritoItems] = useState<CartItem[]>([])
-  //const [productoSeleccionado, setProductoSeleccionado] = useState<Product | null>(null)
+  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>('products');
 
-  // Manejar click en producto
+  // Agregar producto directamente al carrito al hacer clic
   const handleProductClick = (producto: Product) => {
-    console.log("Producto seleccionado:", producto)
-   // setProductoSeleccionado(producto)
-    agregarAlCarrito(producto)
-  }
-
-  // Agregar producto al carrito
-  const agregarAlCarrito = (producto: Product) => {
     setCarritoItems(prev => {
-      const itemExistente = prev.find(item => item.id === producto.id)
-      
+      const itemExistente = prev.find(item => item.id === producto.id);
       if (itemExistente) {
         return prev.map(item =>
           item.id === producto.id
             ? { ...item, cantidad: item.cantidad + 1 }
             : item
-        )
+        );
       } else {
-        return [...prev, { ...producto, cantidad: 1 }]
+        return [...prev, { ...producto, cantidad: 1 }];
       }
-    })
-  }
+    });
+  };
+
+  // Actualizar la cantidad de un producto
+  const handleUpdateCantidad = (productoId: number, nuevaCantidad: number) => {
+    setCarritoItems(prev => {
+      if (nuevaCantidad <= 0) {
+        return prev.filter(item => item.id !== productoId);
+      }
+      return prev.map(item =>
+        item.id === productoId
+          ? { ...item, cantidad: nuevaCantidad }
+          : item
+      );
+    });
+  };
 
   // Calcular total del carrito
   const totalCarrito = carritoItems.reduce((total, item) => {
-    const precio = parseFloat(item.price.replace('$', ''))
-    return total + (precio * item.cantidad)
-  }, 0)
+    const precio = parseFloat(item.price.replace('$', ''));
+    return total + (precio * item.cantidad);
+  }, 0);
+
+  // Renderizar contenido principal o pantallas de pago
+  const renderContent = () => {
+    switch (checkoutStep) {
+      case 'checkout':
+        return (
+          <Checkout
+            carritoItems={carritoItems}
+            totalCarrito={totalCarrito}
+            onBack={() => setCheckoutStep('products')}
+            onUpdateCantidad={handleUpdateCantidad}
+            onRemoveItem={(productoId) => setCarritoItems(prev => prev.filter(item => item.id !== productoId))}
+            onSelectPaymentMethod={(method) => setCheckoutStep(method)}
+          />
+        );
+      case 'cash':
+        return (
+          <CashPayment 
+            carritoItems={carritoItems}
+            totalCarrito={totalCarrito}
+            onBack={() => setCheckoutStep('checkout')}
+          />
+        );
+      case 'card':
+        return (
+          <CardPayment 
+            onBack={() => setCheckoutStep('checkout')}
+          />
+        );
+      case 'products':
+      default:
+        // ✅ CORRECCIÓN: Se quita el <SideBar /> de aquí para evitar duplicados
+        return (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <header className="bg-white shadow-sm border-b">
+              <div className="px-6 py-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      {selectedCategory === "todas" ? "Todos los Productos" : 
+                       selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+                    </h1>
+                    <p className="text-sm text-gray-500">Selecciona tus productos favoritos</p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Button variant="ghost" size="sm"><User className="h-4 w-4" /></Button>
+                    <Button variant="ghost" size="sm"><Settings className="h-4 w-4" /></Button>
+                  </div>
+                </div>
+              </div>
+            </header>
+            <main className="flex-1 overflow-y-auto p-6 mb-24">
+              <ProductList
+                onProductClick={handleProductClick}
+                categoria={selectedCategory === "todas" ? undefined : selectedCategory}
+                incluirIngredientes={false}
+              />
+            </main>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
+      {/* El Sidebar ahora solo se renderiza aquí una vez */}
       <SideBar />
+      {renderContent()}
 
-      {/* Contenido Principal */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b">
-          <div className="px-6 py-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {selectedCategory === "todas" ? "Todos los Productos" : 
-                   selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
-                </h1>
-                <p className="text-sm text-gray-500">
-                  Selecciona tus productos favoritos
-                </p>
+      {/* Footer del Pedido */}
+      {checkoutStep === 'products' && carritoItems.length > 0 && (
+        <footer className="fixed bottom-0 left-64 right-0 bg-white border-t-2 border-gray-200 shadow-lg p-4 z-10">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4 overflow-x-auto">
+              {carritoItems.map(item => (
+                <div key={item.id} className="flex-shrink-0 flex items-center gap-3 p-2 border rounded-md">
+                  {/* ✅ CORRECCIÓN: Se agrega la URL base para que las imágenes se muestren */}
+                  <img src={`http://localhost:3000/${item.image}`} alt={item.name} className="w-10 h-10 object-cover rounded" />
+                  <div>
+                    <p className="font-semibold text-sm">{item.name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                       <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleUpdateCantidad(item.id, item.cantidad - 1)}>
+                         <Minus className="h-3 w-3" />
+                       </Button>
+                       <span className="text-sm font-bold">{item.cantidad}</span>
+                       <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleUpdateCantidad(item.id, item.cantidad + 1)}>
+                         <Plus className="h-3 w-3" />
+                       </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center gap-4 ml-4">
+              <div className="text-right">
+                <p className="text-gray-600">Total</p>
+                <p className="font-bold text-xl">${totalCarrito.toFixed(2)}</p>
               </div>
-              
-              <div className="flex items-center space-x-4">
-                {/* Carrito */}
-                <Button variant="outline" size="sm" className="relative">
-                  <ShoppingCart className="h-4 w-4" />
-                  {carritoItems.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {carritoItems.length}
-                    </span>
-                  )}
-                  <span className="ml-2 hidden sm:inline">${totalCarrito.toFixed(2)}</span>
-                </Button>
-                
-                <Button variant="ghost" size="sm">
-                  <User className="h-4 w-4" />
-                </Button>
-                
-                <Button variant="ghost" size="sm">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button className="bg-emerald-600 hover:bg-emerald-700 h-12 px-6" onClick={() => setCheckoutStep('checkout')}>
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Proceder al Pago
+              </Button>
             </div>
           </div>
-        </header>
-
-        {/* Contenido Scrolleable */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <ProductList
-            onProductClick={handleProductClick}
-            categoria={selectedCategory === "todas" ? undefined : selectedCategory}
-            incluirIngredientes={false}
-          />
-        </main>
-      </div>
-
-      {/* Panel lateral del carrito (opcional) */}
-      {carritoItems.length > 0 && (
-        <aside className="w-80 bg-white border-l border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center">
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            Mi Pedido ({carritoItems.length})
-          </h3>
-          
-          <div className="space-y-3 mb-6">
-            {carritoItems.map((item) => (
-              <div key={item.id} className="flex items-center justify-between text-sm">
-                <div className="flex-1">
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-gray-500">Cantidad: {item.cantidad}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold">{item.price}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <div className="border-t pt-4">
-            <div className="flex justify-between font-bold text-lg mb-4">
-              <span>Total:</span>
-              <span>${totalCarrito.toFixed(2)}</span>
-            </div>
-            
-            <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
-              Proceder al Pago
-            </Button>
-          </div>
-        </aside>
+        </footer>
       )}
     </div>
   )
