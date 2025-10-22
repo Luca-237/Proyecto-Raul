@@ -1,6 +1,7 @@
 /* =============================================================================
 // src/index.css - NUEVOS ESTILOS
 // ============================================================================= */
+@import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

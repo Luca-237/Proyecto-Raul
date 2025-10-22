@@ -33,6 +33,10 @@ interface ProductListProps {
   categoria?: string;
   incluirIngredientes?: boolean;
   titulo?: string;
+  // Props adicionales para integración con el carrito desde Home
+  onAddToCart?: (producto: Product) => void;
+  onRemoveFromCart?: (productId: string) => void;
+  carrito?: { _id: string; nombre: string; precio: number; cantidad: number }[];
 }
 
 // ===== IMÁGENES POR DEFECTO =====
@@ -110,7 +114,8 @@ export default function ProductList({
   onProductClick, 
   categoria, 
   incluirIngredientes = false,
-  titulo 
+  titulo,
+  onAddToCart
 }: ProductListProps) {
   const [productos, setProductos] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,9 +128,10 @@ export default function ProductList({
     try {
       let productosRaw: ProductBackend[];
       
-      if (categoria) {
-        console.log(`📦 Cargando productos de categoría: ${categoria}`);
-        productosRaw = await obtenerProductosPorCategoria(categoria);
+      const catNormalized = categoria ? categoria.trim().toLowerCase() : '';
+      if (catNormalized && catNormalized !== 'todos' && catNormalized !== 'todas') {
+  console.log(`📦 Cargando productos de categoría: ${categoria}`);
+  productosRaw = await obtenerProductosPorCategoria(catNormalized);
       } else {
         console.log('📦 Cargando todos los productos');
         productosRaw = await obtenerProductos();
@@ -284,6 +290,10 @@ export default function ProductList({
                 className="w-full h-8 text-xs font-medium bg-emerald-700 hover:bg-emerald-800"
                 onClick={(e) => {
                   e.stopPropagation();
+                  if (onAddToCart) {
+                    onAddToCart(product);
+                    return;
+                  }
                   handleProductClick(product);
                 }}
               >
