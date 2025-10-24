@@ -1,0 +1,36 @@
+{
+  "clientes": [
+    {
+      "idCliente": 1,
+      "nombre": "Juan Pérez",
+      "usuario": "juanp",
+      "correo": "juan@email.com",
+      "telefono": "3511234567",
+      "puntos": 150
+    },
+    {
+      "idCliente": 2,
+      "nombre": "María González",
+      "usuario": "mariag",
+      "correo": "maria@email.com",
+      "telefono": "3517654321",
+      "puntos": 80
+    },
+    {
+      "idCliente": 3,
+      "nombre": "Carlos Rodríguez",
+      "usuario": "carlosr",
+      "correo": "carlos@email.com",
+      "telefono": "3519876543",
+      "puntos": 250
+    },
+    {
+      "idCliente": 4,
+      "nombre": "Ana López",
+      "usuario": "anal",
+      "correo": "ana@email.com",
+      "telefono": "3512468135",
+      "puntos": 45
+    }
+  ]
+}
